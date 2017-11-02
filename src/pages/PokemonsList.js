@@ -96,20 +96,18 @@ class PokemonsList extends Component {
         const { types } = this.props;
         return types.map((t,index) => {
             return (
-               
-                    <Checkbox
-                        key={index}
-                        style={{margin: '5px'}}
-                        onChange={(e) => {
-                            let ob = { currentPage: 1 };
-                            ob[t.name] = !this.state[t.name];
-                            this.setState(ob);
-                        }}
-                        checked={this.state[t.name]} 
-                    >
+                <Checkbox
+                    key={index}
+                    style={{margin: '5px'}}
+                    onChange={(e) => {
+                        let ob = { currentPage: 1 };
+                        ob[t.name] = !this.state[t.name];
+                        this.setState(ob);
+                    }}
+                    checked={this.state[t.name]} 
+                >
                     {t.name}
-                    </Checkbox>
-   
+                </Checkbox>
             );
         });
     }
@@ -127,6 +125,7 @@ class PokemonsList extends Component {
         }
         return(
             <div className="App">
+                <h1>Find Your Pokemon!</h1>
                 <FormControl
                     placeholder="Search by name"
                     onChange={(e) => this.setState({searchString: e.target.value, currentPage: 1})}
