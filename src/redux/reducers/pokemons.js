@@ -7,7 +7,6 @@ const initialState = {
 };
 
 export default function pokemons(state = initialState, action) {
-  let newState;
   switch (action.type) {
     case ActionTypes.GET_POKEMONS_LIST:
       return {...state, loading: true};

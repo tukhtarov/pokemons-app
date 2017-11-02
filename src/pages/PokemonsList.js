@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Button, Table, FormControl, Checkbox} from 'react-bootstrap';
 
 import * as pokemonsActions from '../redux/actions/pokemons';
 
 const stateToProps = store => ({
     pokemonsList: store.pokemons.list,
     types: store.pokemons.types,
+    loading: store.pokemons.loading,
 });
 
 const actionToProps = dispatch => bindActionCreators({
@@ -41,6 +43,7 @@ class PokemonsList extends Component {
             fairy: true,
             unknown: true,
             shadow: true,
+            all: true,
         }
     }
 
@@ -51,13 +54,13 @@ class PokemonsList extends Component {
     renderRow = () => {
         const { currentPage, rowsPerPage } = this.state;
         const list = this.getFilteredListByType().slice(currentPage*rowsPerPage-rowsPerPage, currentPage*rowsPerPage);
-        console.log(list);
+        
         if (list.length === 0) {
             return;
         }
 
         return list.map((pok, ind) => {
-            const typesStr = pok.types.map(type => type.name).toString(' ,');
+            const typesStr = pok.types.map(type => type.name).toString(', ');
             return(
                 <tr key={ind}>
                     <td>{currentPage*rowsPerPage-rowsPerPage+ind+1}</td>
@@ -68,7 +71,7 @@ class PokemonsList extends Component {
         });
     }
 
-    getFilteredPokemonsList = () => {
+    getFilteredListByName = () => {
         const { pokemonsList } = this.props;
         const { searchString } = this.state;
         return pokemonsList.filter((pok) => {
@@ -78,7 +81,7 @@ class PokemonsList extends Component {
     }
 
     getFilteredListByType = () => {
-        return this.getFilteredPokemonsList().filter((pok) => {
+        return this.getFilteredListByName().filter((pok) => {
             for (let i=0; i<pok.types.length; i++) {
                 const type = pok.types[i].name;
                 if (this.state[type]) {
@@ -93,36 +96,46 @@ class PokemonsList extends Component {
         const { types } = this.props;
         return types.map((t,index) => {
             return (
-                <div key={index}>
-                    <input
-                        type="checkbox"
+               
+                    <Checkbox
+                        key={index}
+                        style={{margin: '5px'}}
                         onChange={(e) => {
-                            let ob = {};
+                            let ob = { currentPage: 1 };
                             ob[t.name] = !this.state[t.name];
                             this.setState(ob);
                         }}
-                        checked={this.state[t.name]}
-                    />
-                    <span>{t.name}</span>
-                </div>
+                        checked={this.state[t.name]} 
+                    >
+                    {t.name}
+                    </Checkbox>
+   
             );
         });
     }
 
     render() {
-        console.log(this.props);
-        console.log(this.getFilteredListByType().length);
         const { currentPage, rowsPerPage } = this.state;
+        const { loading } = this.props;
+        if (loading) {
+            return (
+                <div className="loading-container">
+                    <h2>Loading data</h2>
+                    <img alt="App-logo" className="App-logo" src={require('../logo.svg')}/>
+                </div>
+            );
+        }
         return(
             <div className="App">
-                <input
+                <FormControl
                     placeholder="Search by name"
-                    onChange={(e) => this.setState({searchString: e.target.value})}
+                    onChange={(e) => this.setState({searchString: e.target.value, currentPage: 1})}
                 />
-                <div>
+                <h5>Filter by type:</h5>
+                <div className="checkbox-container">
                     {this.renderTypes()}
                 </div>
-                <table>
+                <Table striped>
                     <thead>
                         <tr>
                             <td>Number</td>
@@ -133,13 +146,19 @@ class PokemonsList extends Component {
                     <tbody>
                         {this.renderRow()}
                     </tbody>
-                </table>
-                <button
+                </Table>
+                <Button
+                    onClick={() => this.setState({currentPage: currentPage-1})}
+                    disabled={currentPage === 1 ? true : false}
+                >
+                    Previous
+                </Button>
+                <Button
                     onClick={() => this.setState({currentPage: currentPage+1})}
                     disabled={(this.getFilteredListByType().length - (currentPage*rowsPerPage) > 0) ? false : true}
                 >
                     Next
-                </button>
+                </Button>
             </div>
         );
     }

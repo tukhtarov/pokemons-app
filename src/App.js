@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 
 import store from './redux/store';
 import PokemonsList from './pages/PokemonsList';
-import logo from './logo.svg';
+
 import './App.css';
 
 class App extends Component {
